@@ -5,7 +5,7 @@ import { refreshGoogleToken, refreshMicrosoftToken } from '../lib/oauth.mjs'
 import { fetchMessages, listMailboxes, resolveTrashMailbox, withClient } from '../lib/mailbox.mjs'
 import { applyHardRules, classifyWithLocalModel, decide, messageKey } from '../lib/triage.mjs'
 
-const SAFETY = { minAgeDays: 7, confidenceThreshold: 0.85, protectDomains: ['usm.my', 'uow.edu.my'], protectSenders: [] }
+const SAFETY = { minAgeDays: 7, confidenceThreshold: 0.85, protectDomains: ['example.edu', 'other.example.edu'], protectSenders: [] }
 
 const wanted = (process.env.ACCOUNTS ?? '').split(',').map((s) => s.trim()).filter(Boolean)
 const results = importFromThunderbird({})
@@ -62,4 +62,5 @@ for (const account of targets) {
     console.log(`${line}\n  失败：${String(error?.message ?? error).slice(0, 220)}\n`)
   }
 }
+
 

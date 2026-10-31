@@ -46,7 +46,7 @@ const config = {
   stateDir: '.mail-triage',
   scan: { lookbackDays: 30, maxPerRun: 200, mailboxes: ['INBOX'] },
   localModel: { enabled: true, baseURL: 'http://127.0.0.1:11434', model: 'qwen2.5:7b', timeoutMs: 120000, concurrency: 2 },
-  safety: { minAgeDays: 7, maxDeletesPerRun: 50, confidenceThreshold: 0.85, protectDomains: ['usm.my', 'uow.edu.my'], protectSenders: [] },
+  safety: { minAgeDays: 7, maxDeletesPerRun: 50, confidenceThreshold: 0.85, protectDomains: ['example.edu', 'other.example.edu'], protectSenders: [] },
   thunderbird: { enabled: true, profiles: [] },
 }
 
@@ -86,4 +86,5 @@ if (plan.manifestId) {
 }
 
 show('audit', await tools.mail_triage_audit.execute({ limit: 5 }, exec))
+
 

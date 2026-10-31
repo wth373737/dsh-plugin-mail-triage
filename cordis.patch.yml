@@ -18,9 +18,7 @@
           requireApproval: true
           minAgeDays: 7
           maxDeletesPerRun: 50
-          protectDomains:
-            - usm.my
-            - uow.edu.my
+          protectDomains: []
           protectSenders: []
           neverDeleteCategories:
             - 验证码/一次性通知
@@ -34,3 +32,4 @@
         thunderbird:
           enabled: true
           profiles: []
+

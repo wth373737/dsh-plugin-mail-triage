@@ -103,7 +103,7 @@ localModel:
 safety:
   minAgeDays: 7         # 太新的邮件不进绿桶
   maxDeletesPerRun: 50
-  protectDomains: [usm.my, uow.edu.my]
+  protectDomains: [example.edu, other.example.edu]
   protectSenders: []
 ```
 
@@ -146,3 +146,38 @@ MIT © 2026 wth373737
 - 卡片里只放"数量 + 总量 + 是否可恢复"这类一眼能看完的信息；
 - 逐条清单、样例邮件、体积明细一律放在工具的返回值里，由会话模型在对话中展示；
 - 需要用户看细节时，先生成报告/manifest 文件让他打开，再弹一张短卡片确认。
+
+
+## 完成度与验证状态（1.0.0）
+
+**已在真实邮箱上验证**
+
+- 从雷鸟导入 7 个账号（Microsoft 365 / Gmail / 163），零手输凭据
+- IMAP 认证：Microsoft 365 OAuth2（XOAUTH2，令牌自动轮换并回写）、Gmail（OAuth 或应用专用密码）、163（含 IMAP ID 命令）
+- 只读增量扫描 612 封、硬保护规则、本地模型分类、三桶、中文报告
+- 清单 → manifest（含内容哈希）→ 审批卡片 → 批量 MOVE 到回收站
+- 审计日志 354 条真实操作，0 失败；两轮共移动 354 封 / 796 MB
+
+**尚未验证或未实现**
+
+- Gmail / 163 只验证了连接与扫描，未做过真实删除
+- 非 UTF-8 正文（如 windows-1256）会显示为乱码，分类仍可用
+- 默认只扫 INBOX；其它文件夹可配置但未验证
+- 不做附件单独清理、不自动展开子文件夹、不提供"清空回收站"（不可恢复操作刻意留给用户）
+
+## 保护策略可按工作区覆盖
+
+发布包里 `protectDomains` 默认是空的（不把任何机构域名写死）。个人策略放在工作区
+`.mail-triage/config.json` 的 `safety` 段，会覆盖插件配置：
+
+```json
+{
+  "safety": {
+    "protectDomains": ["example.edu"],
+    "protectSenders": [],
+    "minAgeDays": 7
+  }
+}
+```
+
+这样升级插件不会冲掉你自己的保护名单。

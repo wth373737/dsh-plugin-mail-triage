@@ -40,7 +40,7 @@ function check(name, fn) {
 const SAFETY = {
   minAgeDays: 7,
   confidenceThreshold: 0.85,
-  protectDomains: ['usm.my'],
+  protectDomains: ['example.edu'],
   protectSenders: ['boss@example.com'],
 }
 
@@ -81,7 +81,7 @@ check('英语 OTP 同样命中', () => {
 })
 
 check('白名单域名受保护', () => {
-  const rules = applyHardRules(msg({ fromAddress: 'admin@student.usm.my' }), SAFETY)
+  const rules = applyHardRules(msg({ fromAddress: 'admin@student.example.edu' }), SAFETY)
   assert.ok(rules.flags.includes('user_whitelisted'))
   assert.equal(rules.protected, true)
 })
@@ -116,10 +116,10 @@ check('个人地址带 In-Reply-To 仍然保护', () => {
 })
 
 check('角色发件人识别', () => {
-  for (const address of ['pentadbir_emel@usm.my', 'io@usm.my', 'pg-sac@uow.edu.my', 'no-reply@x.com', 'penerbit@usm.my']) {
+  for (const address of ['pentadbir_emel@example.edu', 'io@example.edu', 'pg-sac@other.example.edu', 'no-reply@x.com', 'penerbit@example.edu']) {
     assert.equal(isRoleSender(address), true, address)
   }
-  for (const address of ['nurfatinamera@usm.my', 'alice@example.com', 'wt373737@gmail.com']) {
+  for (const address of ['nurfatinamera@example.edu', 'alice@example.com', 'user@example.com']) {
     assert.equal(isRoleSender(address), false, address)
   }
 })
@@ -406,8 +406,8 @@ process.stdout.write('\n[8] 雷鸟账号归并\n')
 
 check('M365 OAuth 账号识别', () => {
   const accounts = accountsFromLogins([
-    { hostname: 'imap://outlook.office365.com', username: 'stu@student.usm.my', password: '' },
-    { hostname: 'oauth://login.microsoftonline.com', username: 'stu@student.usm.my', password: 'refresh-token-1', httpRealm: 'IMAP.AccessAsUser.All' },
+    { hostname: 'imap://outlook.office365.com', username: 'stu@student.example.edu', password: '' },
+    { hostname: 'oauth://login.microsoftonline.com', username: 'stu@student.example.edu', password: 'refresh-token-1', httpRealm: 'IMAP.AccessAsUser.All' },
   ])
   assert.equal(accounts.length, 1)
   assert.equal(accounts[0].provider, 'm365')
@@ -450,4 +450,5 @@ process.stdout.write(`\n${passed} passed, ${failures.length} failed\n`)
 if (failures.length > 0) {
   process.exitCode = 1
 }
+
 
