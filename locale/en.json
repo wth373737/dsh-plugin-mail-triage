@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Mail Triage & Safe Cleanup",
+    "description": "Read-only incremental mail triage with a rule engine, optional local-model classification, and a review queue. Deleting is a separate, explicitly approved step that only moves messages to Trash."
+  }
+}

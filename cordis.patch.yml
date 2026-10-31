@@ -1,0 +1,36 @@
+- insert:
+    - id: mail-triage
+      name: dsh-plugin-mail-triage
+      config:
+        stateDir: .mail-triage
+        scan:
+          lookbackDays: 30
+          maxPerRun: 200
+          mailboxes:
+            - INBOX
+        localModel:
+          enabled: true
+          baseURL: http://127.0.0.1:11434
+          model: qwen2.5:7b
+          timeoutMs: 120000
+          concurrency: 2
+        safety:
+          requireApproval: true
+          minAgeDays: 7
+          maxDeletesPerRun: 50
+          protectDomains:
+            - usm.my
+            - uow.edu.my
+          protectSenders: []
+          neverDeleteCategories:
+            - 验证码/一次性通知
+            - 账单/发票
+            - 钓鱼可疑
+            - 附件风险
+            - 公务交流
+            - 学术交流
+            - 个人重要
+            - 已发送/草稿
+        thunderbird:
+          enabled: true
+          profiles: []
