@@ -22,6 +22,7 @@ import { buildReport, reportName } from '../lib/report.mjs'
 import { createStore } from '../lib/store.mjs'
 import { snippetFromSource, resolveTrashMailbox, collectAttachments } from '../lib/mailbox.mjs'
 import { accountsFromLogins } from '../lib/thunderbird.mjs'
+import { credentialSlug, credentialKeyFor } from '../lib/tools.mjs'
 
 let passed = 0
 const failures = []
@@ -446,9 +447,42 @@ check('无用户名的记录被忽略', () => {
   assert.equal(accounts.length, 0)
 })
 
+process.stdout.write('\n[9] 凭据键合法性（曾导致宿主启动崩溃）\n')
+
+const SEGMENT_RE = /^[a-z][a-z0-9-]*$/
+
+check('邮箱地址被转换成合法键段', () => {
+  const cases = [
+    ['0209560@student.uow.edu.my', 'a0209560-student-uow-edu-my'],
+    ['wth373737@163.com', 'wth373737-163-com'],
+    ['wutianhao@student.usm.my', 'wutianhao-student-usm-my'],
+    ['wutianhao373737@gmail.com', 'wutianhao373737-gmail-com'],
+    ['wth373737@outlook.com', 'wth373737-outlook-com'],
+  ]
+  for (const [address, expected] of cases) {
+    assert.equal(credentialSlug(address), expected, address)
+  }
+})
+
+check('生成的凭据键每个段都合法', () => {
+  const addresses = ['0209560@student.uow.edu.my', 'x@y.z', '@@@', '中文@例子.中国', '', 'a']
+  for (const address of addresses) {
+    const key = credentialKeyFor(address)
+    for (const segment of key.split('/')) {
+      assert.match(segment, SEGMENT_RE, `${address} → ${key}`)
+    }
+  }
+})
+
+check('无法 slug 的输入回退到哈希键且仍然合法', () => {
+  const key = credentialKeyFor('中文@例子.中国')
+  assert.match(key.slice('mail-triage/'.length), SEGMENT_RE)
+})
+
 process.stdout.write(`\n${passed} passed, ${failures.length} failed\n`)
 if (failures.length > 0) {
   process.exitCode = 1
 }
+
 
 
