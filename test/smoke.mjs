@@ -16,6 +16,7 @@ import {
   validateClassification,
   parseModelAnswer,
   mailboxKindOf,
+  isRoleSender,
 } from '../lib/triage.mjs'
 import { buildReport, reportName } from '../lib/report.mjs'
 import { createStore } from '../lib/store.mjs'
@@ -99,6 +100,28 @@ check('回复线程受保护', () => {
   const rules = applyHardRules(msg({ inReplyTo: '<abc@x>' }), SAFETY)
   assert.ok(rules.flags.includes('thread_with_human'))
   assert.equal(rules.protected, true)
+})
+
+check('机构代发地址带 In-Reply-To 不算人类会话', () => {
+  const rules = applyHardRules(msg({ fromAddress: 'io@example.com', inReplyTo: '<abc@x>' }), SAFETY)
+  assert.ok(rules.flags.includes('bulk_thread'))
+  assert.ok(!rules.flags.includes('thread_with_human'))
+  assert.equal(rules.protected, false)
+})
+
+check('个人地址带 In-Reply-To 仍然保护', () => {
+  const rules = applyHardRules(msg({ fromAddress: 'alice@example.com', inReplyTo: '<abc@x>' }), SAFETY)
+  assert.ok(rules.flags.includes('thread_with_human'))
+  assert.equal(rules.protected, true)
+})
+
+check('角色发件人识别', () => {
+  for (const address of ['pentadbir_emel@usm.my', 'io@usm.my', 'pg-sac@uow.edu.my', 'no-reply@x.com', 'penerbit@usm.my']) {
+    assert.equal(isRoleSender(address), true, address)
+  }
+  for (const address of ['nurfatinamera@usm.my', 'alice@example.com', 'wt373737@gmail.com']) {
+    assert.equal(isRoleSender(address), false, address)
+  }
 })
 
 check('已发送文件夹受保护', () => {
@@ -427,3 +450,4 @@ process.stdout.write(`\n${passed} passed, ${failures.length} failed\n`)
 if (failures.length > 0) {
   process.exitCode = 1
 }
+
