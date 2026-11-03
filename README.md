@@ -40,15 +40,17 @@ The first run only reads and labels. Nothing in the mailbox changes.
 No manual typing: the plugin decrypts the local Thunderbird profile
 (`key4.db` + `logins.json`) and stores the account secrets in the DSH credential
 store. Decryption happens locally with `node:sqlite` and `node:crypto` — no
-Python, no NSS DLL, no native modules. Nothing is written to the workspace in
-plaintext and nothing is uploaded.
+Python, no NSS DLL, no native modules. Nothing is uploaded, and nothing is
+written to the workspace in plaintext: if the host exposes no credential
+service, saving a secret fails with an explanation instead of falling back to a
+file.
 
 ## Install
 
 In the DSH UI, **Plugins → + Add plugin**:
 
 ```
-github:<your-account>/dsh-plugin-mail-triage
+github:wth373737/dsh-plugin-mail-triage
 ```
 
 `imapflow` (the single dependency, pure JavaScript) is installed by pnpm.
@@ -64,6 +66,9 @@ github:<your-account>/dsh-plugin-mail-triage
   instead of guessing.
 - The manifest carries a content hash that is re-verified before execution.
 - Every move is audited.
+- Passwords and OAuth tokens live in the Host credential store only. With no
+  credential service available the plugin refuses to store or read one rather
+  than writing a plaintext file next to the reports.
 
 ## State
 
@@ -88,6 +93,15 @@ npm test    # offline smoke tests: rules, decision matrix, schema validation, de
 - If a Thunderbird OAuth grant has expired, the plugin reports it honestly:
   sign in again in Thunderbird, then re-run `import_thunderbird`.
 - Only INBOX is scanned by default (configurable); sub-folders are not expanded.
+- `node:sqlite` needs Node 22.5 or newer. The runtime bundled with DSH satisfies
+  this; on an older host the plugin fails to load instead of degrading.
+- A secret typed into `set_secret`, and a Thunderbird primary password typed into
+  `import_thunderbird`, become part of the conversation transcript. Prefer
+  `import_thunderbird` when Thunderbird already holds the password.
+- A plaintext `.mail-triage/secrets.json` left by a build before 1.0.2 is moved
+  into the credential store and deleted the next time `mail_triage_accounts`
+  runs. If the service is unreachable the file is left alone and the tool says
+  to delete it by hand.
 
 ## Development note
 

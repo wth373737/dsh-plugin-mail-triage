@@ -1,7 +1,6 @@
 {
   "name": "dsh-plugin-mail-triage",
-  "version": "1.0.1",
-  "private": true,
+  "version": "1.0.2",
   "type": "module",
   "description": "Mail triage and safe cleanup for DeepSeek Harness: incremental read-only scan, rule engine plus local-model classification, triage report, explicit approval, then move-to-Trash only.",
   "exports": {
@@ -39,7 +38,18 @@
     "triage"
   ],
   "author": "wth373737",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wth373737/dsh-plugin-mail-triage.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wth373737/dsh-plugin-mail-triage/issues"
+  },
+  "homepage": "https://github.com/wth373737/dsh-plugin-mail-triage#readme",
+  "engines": {
+    "node": ">=22.5"
+  }
 }
 
 
